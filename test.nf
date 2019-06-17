@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 params.name             = "RNA-seq"
 params.reads            = "/data/fastq/*{*_R1,*_R2}.fastq.gz"
-
+params.email            = "gabrijela.dumbovic@colorado.edu"
 
 log.info "RNA-seq Pipeline"
 log.info "====================================="
@@ -11,3 +11,20 @@ log.info "\n"
 
 
 reads = Channel.fromFilePairs(params.reads, size: -1)
+
+
+process view_reads {
+
+  publishDir "results"
+
+  input:
+  set val(sample_id), file(read_files) from reads
+
+  output:
+  file "*.txt"
+
+  script:
+  """
+ zcatzcat ${read_files[[1]]} | head > ${sample_id}_reads.txt 
+  """
+}
